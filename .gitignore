@@ -1,0 +1,4 @@
+.env
+.DS_Store
+requests.rest
+node_modules/

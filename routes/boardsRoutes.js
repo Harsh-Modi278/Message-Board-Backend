@@ -12,7 +12,7 @@ const pool = require("../db");
 router.get("/", async (req, res, next) => {
   try {
     const allBoards = await pool.query(
-      "SELECT user_id, board_id, board_name, LEFT(board_description, 40) AS preview FROM boards;"
+      "SELECT user_id, board_id, board_name, board_description AS preview FROM boards;"
     );
     res.json(allBoards.rows);
   } catch (err) {

@@ -5,7 +5,7 @@ const app = express();
 const cors = require("cors");
 
 const boardsRoutes = require("./routes/boardsRoutes.js");
-// const indexRoutes = require("./routes/indexRoutes.js");
+const authRoutes = require("./routes/authRoutes.js");
 
 const PORT = process.env.PORT || 5000;
 
@@ -18,3 +18,4 @@ app.use(cors());
 // app.use("/api", indexRoutes);
 
 app.use("/api/boards", boardsRoutes);
+app.use("/api/auth", authRoutes);

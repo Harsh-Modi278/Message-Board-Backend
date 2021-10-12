@@ -10,10 +10,25 @@ dotenv.config({ path: "./.env", encoding: "utf-8" });
 const pool = require("../db");
 
 router.get("/", async (req, res, next) => {
+  const { sort } = req.query;
+  console.log(sort);
+  let queryString =
+    "SELECT user_id, board_id, board_name, board_description AS preview, time_created, upvotes FROM boards ";
+  if (sort === "best") {
+    queryString += "ORDER BY upvotes DESC;";
+  } else if (sort == "old") {
+    queryString += "ORDER BY time_created;";
+  } else if (sort == "new") {
+    queryString += "ORDER BY time_created DESC;";
+  } else if (sort == "comments count") {
+    queryString =
+      "SELECT boards.user_id, board_id, board_name, board_description AS preview, boards.upvotes, time_created,  COUNT(comment_id) as comments_count FROM boards JOIN comments USING(board_id) GROUP BY (board_id, boards.user_id, board_description, boards.upvotes) ORDER BY comments_count DESC;";
+  } else {
+    queryString += ";";
+  }
+  console.log(queryString);
   try {
-    const allBoards = await pool.query(
-      "SELECT user_id, board_id, board_name, board_description AS preview FROM boards;"
-    );
+    const allBoards = await pool.query(queryString);
     res.json(allBoards.rows);
   } catch (err) {
     console.log(err.message);
@@ -33,11 +48,22 @@ router.get("/:boardId", async (req, res, next) => {
 });
 
 router.get("/:boardId/comments", async (req, res, next) => {
+  const { sort } = req.query;
+  console.log(sort);
+  let queryString =
+    "SELECT comment_id, user_id, comment, upvotes, time AS time_created FROM comments WHERE board_id = $1";
+  if (sort === "best") {
+    queryString += "ORDER BY upvotes DESC;";
+  } else if (sort == "old") {
+    queryString += "ORDER BY time";
+  } else if (sort == "new") {
+    queryString += "ORDER BY time DESC";
+  } else {
+    queryString += ";";
+  }
+
   try {
-    const board = await pool.query(
-      "SELECT comment_id, user_id, comment FROM comments WHERE board_id = $1;",
-      [req.params.boardId]
-    );
+    const board = await pool.query(queryString, [req.params.boardId]);
     res.json(board.rows);
   } catch (err) {
     console.log(err.message);

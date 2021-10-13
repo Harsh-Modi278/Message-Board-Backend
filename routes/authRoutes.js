@@ -32,6 +32,7 @@ router.post("/login", async (req, res, next) => {
       );
       res.status(200).json({
         status: "success",
+        user_id: updatedUser.rows[0].user_id,
       });
     } else {
       // doesn't exist then insert
@@ -41,6 +42,7 @@ router.post("/login", async (req, res, next) => {
       );
       res.status(200).json({
         status: "success",
+        user_id: newUser.rows[0].user_id,
       });
     }
   } catch (err) {

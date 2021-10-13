@@ -11,7 +11,6 @@ const pool = require("../db");
 
 router.get("/", async (req, res, next) => {
   const { sort } = req.query;
-  console.log(sort);
   let queryString =
     "SELECT user_id, board_id, board_name, board_description AS preview, time_created, upvotes FROM boards ";
   if (sort === "best") {
@@ -49,9 +48,8 @@ router.get("/:boardId", async (req, res, next) => {
 
 router.get("/:boardId/comments", async (req, res, next) => {
   const { sort } = req.query;
-  console.log(sort);
   let queryString =
-    "SELECT comment_id, user_id, comment, upvotes, time AS time_created FROM comments WHERE board_id = $1";
+    "SELECT comment_id, comments.user_id as user_id, comment, upvotes, comments.time as time, username, imageUrl FROM comments JOIN users USING(user_id) WHERE board_id = $1";
   if (sort === "best") {
     queryString += "ORDER BY upvotes DESC;";
   } else if (sort == "old") {

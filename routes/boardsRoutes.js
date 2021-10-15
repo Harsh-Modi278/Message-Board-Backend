@@ -38,7 +38,7 @@ router.get("/:boardId", async (req, res, next) => {
       "SELECT boards.board_id AS board_id, boards.user_id as user_id, board_name, board_description, upvotes, time_created, username, imageUrl FROM boards JOIN users USING(user_id) WHERE board_id = $1;",
       [req.params.boardId]
     );
-    res.json(board.rows);
+    res.json(board.rows[0]);
   } catch (err) {
     console.log(err.message);
   }
@@ -232,5 +232,121 @@ router.delete("/:boardId/comments/:commentId", async (req, res, next) => {
     console.log(err.message);
   }
 });
+
+router.post("/:boardId/upvote", async (req, res, next) => {
+  try {
+    let { user_id } = req.body;
+    let { boardId } = req.params;
+    user_id = parseInt(user_id);
+    boardId = parseInt(boardId);
+
+    // check if already upvoted by same user then downvote
+    const enrty = await pool.query(
+      "SELECT * FROM users_upvotes_boards WHERE user_id = $1 AND board_id = $2",
+      [user_id, boardId]
+    );
+    const board = await pool.query("SELECT upvotes FROM boards WHERE board_id = $1", [boardId]);
+
+    
+    if (enrty.rows.length > 0) {
+      // it has already been upvoted by the same user
+      const updatedBoard = await pool.query(
+        "UPDATE boards SET upvotes = upvotes - 1 WHERE board_id = $1 RETURNING *",
+        [boardId]
+        );
+        
+      //remove the log that user has upvoted the board
+      const deletedEntry = await pool.query(
+        "DELETE FROM users_upvotes_boards WHERE user_id = $1 AND board_id = $2",
+        [user_id, boardId]
+      );
+
+      res.json(updatedBoard.rows[0]);
+    } else {
+      const updatedBoard = await pool.query(
+        "UPDATE boards SET upvotes = upvotes + 1 WHERE board_id = $1 RETURNING *",
+        [boardId]
+      );
+
+      if (board.rows[0].upvotes + 1 != 0) {
+        const result = await pool.query(
+          "INSERT INTO users_upvotes_boards (user_id, board_id) VALUES ($1, $2) RETURNING *",
+          [user_id, boardId]
+        );
+      }
+
+
+      //remove the log that user has downvoted the board
+      await pool.query(
+        "DELETE FROM users_downvotes_boards WHERE user_id = $1 AND board_id = $2",
+        [user_id, boardId]
+      );
+
+      res.json(updatedBoard.rows[0]);
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+});
+
+
+router.post("/:boardId/downvote", async (req, res, next) => {
+  try {
+    let { user_id } = req.body;
+    let { boardId } = req.params;
+    user_id = parseInt(user_id);
+    boardId = parseInt(boardId);
+
+    // check if already downvoted by same user then downvote
+    const enrty = await pool.query(
+      "SELECT * FROM users_downvotes_boards WHERE user_id = $1 AND board_id = $2",
+      [user_id, boardId]
+    );
+
+    if (enrty.rows.length > 0) {
+      // it has already been downvoted by the same user
+      const updatedBoard = await pool.query(
+        "UPDATE boards SET upvotes = upvotes + 1 WHERE board_id = $1 RETURNING *",
+        [boardId]
+      );
+
+      //remove the log that user has downvoted the comment
+      const deletedEntry = await pool.query(
+        "DELETE FROM users_downvotes_boards WHERE user_id = $1 AND board_id = $2",
+        [user_id, boardId]
+      );
+
+      res.json(updatedBoard.rows[0]);
+    } else {
+      const updatedBoard = await pool.query(
+        "UPDATE boards SET upvotes = upvotes - 1 WHERE board_id = $1 RETURNING *",
+        [boardId]
+      );
+
+      const board = await pool.query(
+        "SELECT upvotes FROM boards WHERE board_id = $1",
+        [boardId]
+      );
+
+
+      if (board.rows[0].upvotes - 1 != 0) {
+        const result = await pool.query(
+          "INSERT INTO users_downvotes_boards (user_id, board_id) VALUES ($1, $2) RETURNING *",
+          [user_id, boardId]
+        );
+      }
+
+      //remove the log that user has upvoted the board
+      const deletedEntry = await pool.query(
+        "DELETE FROM users_upvotes_boards WHERE user_id = $1 AND board_id = $2",
+        [user_id, boardId]
+      );
+      res.json(updatedBoard.rows[0]);
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+});
+
 
 module.exports = router;

@@ -6,6 +6,7 @@ const cors = require("cors");
 
 const boardsRoutes = require("./routes/boardsRoutes.js");
 const authRoutes = require("./routes/authRoutes.js");
+const miscRoutes = require("./routes/miscRoutes.js");
 
 const PORT = process.env.PORT || 5000;
 
@@ -19,3 +20,5 @@ app.use(cors());
 
 app.use("/api/boards", boardsRoutes);
 app.use("/api/auth", authRoutes);
+
+app.use("/api", miscRoutes); //keep it at last

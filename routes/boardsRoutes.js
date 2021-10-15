@@ -12,7 +12,7 @@ const pool = require("../db");
 router.get("/", async (req, res, next) => {
   const { sort } = req.query;
   let queryString =
-    "SELECT user_id, board_id, board_name, board_description AS preview, time_created, upvotes FROM boards ";
+    "SELECT boards.user_id as user_id, board_id, board_name, board_description AS preview, boards.upvotes as upvotes,  COUNT(comment_id) as comments_count, time_created FROM boards LEFT OUTER JOIN comments USING(board_id) GROUP BY (board_id, boards.user_id, board_description, boards.upvotes, time_created) ";
   if (sort === "best") {
     queryString += "ORDER BY upvotes DESC;";
   } else if (sort == "old") {
@@ -20,12 +20,10 @@ router.get("/", async (req, res, next) => {
   } else if (sort == "new") {
     queryString += "ORDER BY time_created DESC;";
   } else if (sort == "comments count") {
-    queryString =
-      "SELECT boards.user_id, board_id, board_name, board_description AS preview, boards.upvotes, time_created,  COUNT(comment_id) as comments_count FROM boards JOIN comments USING(board_id) GROUP BY (board_id, boards.user_id, board_description, boards.upvotes) ORDER BY comments_count DESC;";
+    queryString += "ORDER BY comments_count DESC;";
   } else {
     queryString += ";";
   }
-  console.log(queryString);
   try {
     const allBoards = await pool.query(queryString);
     res.json(allBoards.rows);
@@ -37,7 +35,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:boardId", async (req, res, next) => {
   try {
     const board = await pool.query(
-      "SELECT user_id, board_id, board_name, board_description FROM boards WHERE board_id = $1;",
+      "SELECT boards.board_id AS board_id, boards.user_id as user_id, board_name, board_description, upvotes, time_created, username, imageUrl FROM boards JOIN users USING(user_id) WHERE board_id = $1;",
       [req.params.boardId]
     );
     res.json(board.rows);
@@ -206,6 +204,8 @@ router.delete("/:boardId/comments/:commentId", async (req, res, next) => {
   try {
     let { boardId, commentId } = req.params;
     let { user_id } = req.body;
+    if (!user_id) return res.sendStatus(403);
+
     boardId = parseInt(boardId);
     commentId = parseInt(commentId);
     user_id = parseInt(user_id);
@@ -215,9 +215,8 @@ router.delete("/:boardId/comments/:commentId", async (req, res, next) => {
       "SELECT user_id FROM comments WHERE comment_id = $1",
       [commentId]
     );
-
     if (
-      currComment.rows[0].user_id == undefined ||
+      currComment.rows.length === 0 ||
       currComment.rows[0].user_id != user_id
     ) {
       return res.sendStatus(403);

@@ -86,8 +86,8 @@ router.post("/", async (req, res, next) => {
   try {
     const { user_id, title, description } = req.body;
     const newBoard = await pool.query(
-      "INSERT INTO boards(user_id, board_name, board_description) VALUES ($1, $2, $3) RETURNING *;",
-      [parseInt(user_id), title, description]
+      "INSERT INTO boards(user_id, board_name, board_description, time_created) VALUES ($1, $2, $3, $4) RETURNING *;",
+      [parseInt(user_id), title, description, new Date()]
     );
     res.json(newBoard.rows[0]);
   } catch (err) {

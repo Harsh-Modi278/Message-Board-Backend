@@ -27,8 +27,19 @@ app.use("/api", miscRoutes); //keep it at last
 
 
 // catch-all route
-app.get("*", (req, res, next) => {
+// If request is able pass till here, route was not found. => Send 404 error
+app.use((req, res, next) => {
+    const error = new Error('Not Found');
+    error.status = 404;
+    next(error);
+  });
+  
+  // Handle all the previous errors (including 404 and others)
+  app.use((error, req, res, next) => {
+    res.status(error.status || 500);
     res.json({
-        msg:"invalid route"
+      error : {
+        message: error.message
+      }
     });
-})
+  })

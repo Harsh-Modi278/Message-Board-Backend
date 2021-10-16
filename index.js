@@ -27,7 +27,6 @@ app.use("/api", miscRoutes); //keep it at last
 
 // catch-all route
 app.get("*", (req, res, next) => {
-    console.log("catch all route")
     res.json({
         msg:"invalid route"
     });

@@ -10,7 +10,6 @@ dotenv.config({ path: "./.env", encoding: "utf-8" });
 const pool = require("../db");
 
 router.get("/", async (req, res, next) => {
-  console.log("here:", req.path);
   const { sort } = req.query;
   let queryString =
     "SELECT boards.user_id as user_id, board_id, board_name, board_description AS preview, boards.upvotes as upvotes,  COUNT(comment_id) as comments_count, time_created FROM boards LEFT OUTER JOIN comments USING(board_id) GROUP BY (board_id, boards.user_id, board_description, boards.upvotes, time_created) ";
@@ -25,12 +24,9 @@ router.get("/", async (req, res, next) => {
   } else {
     queryString += ";";
   }
-  console.log(queryString);
   try {
     const allBoards = await pool.query(queryString);
-    console.log(allBoards.rows);
     res.json(allBoards.rows);
-    console.log("here1");
   } catch (err) {
     console.log(err.message);
   }

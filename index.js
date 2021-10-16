@@ -16,6 +16,7 @@ app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
 // enable all cors requests
 app.use(cors());
+app.options(cors()); //enable cors for pre-flight requests
 
 // app.use("/api", indexRoutes);
 

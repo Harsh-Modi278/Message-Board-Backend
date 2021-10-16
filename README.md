@@ -6,7 +6,7 @@ This is the backend repository for [Message Boards project](https://github.com/H
 
 ## Demo
 
-Frotend demo: https://harsh-modi278.github.io/Message-Board-Frontend/
+Frotend demo: http://message-board-frontend.vercel.app/
 
 Backend is hosted at: https://message-boards-backend.herokuapp.com/
 

@@ -20,7 +20,7 @@ CREATE TABLE users (
 CREATE TABLE boards (
   board_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
-  board_name VARCHAR ( 50 ) UNIQUE NOT NULL,
+  board_name VARCHAR ( 50 ) NOT NULL,
   board_description TEXT NOT NULL,
   time_created TIMESTAMP NOT NULL,
   upvotes INTEGER DEFAULT 1

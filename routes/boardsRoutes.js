@@ -29,6 +29,9 @@ router.get("/", async (req, res, next) => {
     res.json(allBoards.rows);
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error:err.message
+    });
   }
 });
 
@@ -41,6 +44,9 @@ router.get("/:boardId", async (req, res, next) => {
     res.json(board.rows[0]);
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error:err.message
+    });
   }
 });
 
@@ -63,6 +69,9 @@ router.get("/:boardId/comments", async (req, res, next) => {
     res.json(board.rows);
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error:err.message
+    });
   }
 });
 
@@ -79,6 +88,9 @@ router.post("/:boardId/comments", async (req, res, next) => {
     res.json(newComment?.rows);
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error:err.message
+    });
   }
 });
 
@@ -92,6 +104,9 @@ router.post("/", async (req, res, next) => {
     res.json(newBoard.rows[0]);
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error:err.message
+    });
   }
 });
 
@@ -118,6 +133,9 @@ router.put("/:boardId", async (req, res, next) => {
     res.json(updatedBoard?.rows);
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error:err.message
+    });
   }
 });
 
@@ -148,6 +166,9 @@ router.delete("/", async (req, res, next) => {
     res.json(deletedBoard.rows[0]);
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error:err.message
+    });
   }
 });
 
@@ -165,6 +186,9 @@ router.get("/:boardId/comments/:commentId", async (req, res, next) => {
     res.json(commentText.rows[0]);
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error:err.message
+    });
   }
 });
 
@@ -197,6 +221,9 @@ router.put("/:boardId/comments/:commentId", async (req, res, next) => {
     res.json(updatedComment.rows[0]);
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error:err.message
+    });
   }
 });
 
@@ -230,6 +257,9 @@ router.delete("/:boardId/comments/:commentId", async (req, res, next) => {
     res.json(deletedComment.rows[0]);
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error:err.message
+    });
   }
 });
 
@@ -286,6 +316,9 @@ router.post("/:boardId/upvote", async (req, res, next) => {
     }
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error:err.message
+    });
   }
 });
 
@@ -345,6 +378,9 @@ router.post("/:boardId/downvote", async (req, res, next) => {
     }
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error:err.message
+    });
   }
 });
 

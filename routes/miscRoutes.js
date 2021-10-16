@@ -36,20 +36,21 @@ router.get("/boards/:boardId/users/:userId", async (req, res, next) => {
 router.get("/comments/:commentId/users/:userId", async (req, res, next) => {
   try {
     let { userId, commentId } = req.params;
+    const { operation } = req.query;
     userId = parseInt(userId);
     commentId = parseInt(commentId);
 
     const enrty = await pool.query(
-      "SELECT * FROM users_upvotes_comments WHERE user_id = $1 AND comment_id = $2",
+      `SELECT * FROM users_${operation}s_comments WHERE user_id = $1 AND comment_id = $2`,
       [userId, commentId]
     );
 
     if (enrty.rows.length > 0) {
-      // user has upvoted
-      res.json({ upvoted: true });
+      // user has done the operation
+      res.json({ done: true });
     } else {
-      //user has not upvoted
-      res.json({ upvoted: false });
+      //user has not done operaton
+      res.json({ done: false });
     }
   } catch (err) {
     console.log(err.message);

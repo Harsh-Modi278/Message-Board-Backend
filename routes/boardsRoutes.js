@@ -25,6 +25,7 @@ router.get("/", async (req, res, next) => {
   } else {
     queryString += ";";
   }
+  console.log(queryString);
   try {
     const allBoards = await pool.query(queryString);
     console.log(allBoards.rows);

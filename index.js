@@ -23,3 +23,9 @@ app.use("/api/boards", boardsRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api", miscRoutes); //keep it at last
+
+
+// catch-all route
+app.get("*", (req, res, next) => {
+    res.redirect("/api/boards");
+})

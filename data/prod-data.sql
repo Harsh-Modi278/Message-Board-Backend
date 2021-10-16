@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS users_upvotes_boards;
+DROP TABLE IF EXISTS users_downvotes_boards;
+DROP TABLE IF EXISTS users_upvotes_comments;
+DROP TABLE IF EXISTS users_downvotes_comments;
 DROP TABLE IF EXISTS rich_content;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS boards;
@@ -61,20 +65,11 @@ CREATE TABLE users_downvotes_comments (
   PRIMARY KEY (user_id, comment_id)
 );
 
-INSERT INTO rich_content
-  (comment_id, content)
-VALUES
-  (63, '{ "type": "poll", "question": "What is your favorite color?", "options": ["blue", "red", "green", "yellow"] }'),
-  (358, '{ "type": "video", "url": "https://youtu.be/dQw4w9WgXcQ", "dimensions": { "height": 1080, "width": 1920 }}'),
-  (358, '{ "type": "poll", "question": "Is this your favorite video?", "options": ["yes", "no", "oh you"] }'),
-  (410, '{ "type": "image", "url": "https://btholt.github.io/complete-intro-to-linux-and-the-cli/WORDMARK-Small.png", "dimensions": { "height": 400, "width": 1084 }}'),
-  (485, '{ "type": "image", "url": "https://btholt.github.io/complete-intro-to-linux-and-the-cli/HEADER.png", "dimensions": { "height": 237 , "width": 3301 }}');
-
 -- load data
-\copy users FROM './users.csv' WITH (FORMAT CSV);
-\copy boards FROM './boards.csv' WITH (FORMAT CSV);
-\copy comments FROM './comments.csv' WITH (FORMAT CSV);
-\copy users_upvotes_boards FROM './users_upvotes_boards.csv' WITH (FORMAT CSV);
-\copy users_downvotes_boards FROM './users_downvotes_boards.csv' WITH (FORMAT CSV);
-\copy users_downvotes_comments FROM './users_downvotes_comments.csv' WITH (FORMAT CSV);
-\copy users_upvotes_comments FROM './users_upvotes_comments.csv' WITH (FORMAT CSV);
+\copy users FROM '/Users/harshmodi/Downloads/users.csv' WITH (FORMAT CSV, HEADER);
+\copy boards FROM '/Users/harshmodi/Downloads/boards.csv' WITH (FORMAT CSV, HEADER);
+\copy comments FROM '/Users/harshmodi/Downloads/comments.csv' WITH (FORMAT CSV, HEADER);
+\copy users_upvotes_boards FROM '/Users/harshmodi/Downloads/users_upvotes_boards.csv' WITH (FORMAT CSV, HEADER);
+\copy users_downvotes_boards FROM '/Users/harshmodi/Downloads/users_downvotes_boards.csv' WITH (FORMAT CSV, HEADER);
+\copy users_downvotes_comments FROM '/Users/harshmodi/Downloads/users_downvotes_comments.csv' WITH (FORMAT CSV, HEADER);
+\copy users_upvotes_comments FROM '/Users/harshmodi/Downloads/users_upvotes_comments.csv' WITH (FORMAT CSV, HEADER);

@@ -23,7 +23,7 @@ CREATE TABLE boards (
   board_name VARCHAR ( 50 ) NOT NULL,
   board_description TEXT NOT NULL,
   time_created TIMESTAMP NOT NULL,
-  upvotes INTEGER DEFAULT 1
+  upvotes INTEGER DEFAULT 0
 );
 
 CREATE TABLE comments (

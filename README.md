@@ -72,11 +72,13 @@ To deploy this project run
   git push heroku main
 ```
 
-  
 ## Tech Stack
 
 **Client:** React, MaterialUI
 
 **Server:** Node, Express, PostgreSQL
 
+## Database schema design diagram
+
+![message boards db schema design](https://github.com/Harsh-Modi278/Message-Board-Backend/blob/main/message_boards_db_diagram.png)
   

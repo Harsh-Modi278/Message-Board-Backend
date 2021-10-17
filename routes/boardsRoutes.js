@@ -85,7 +85,7 @@ router.post("/:boardId/comments", async (req, res, next) => {
       [parseInt(user_id), parseInt(boardId), comment, new Date()]
     );
 
-    res.json(newComment?.rows);
+    res.json(newComment?.rows[0]);
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
@@ -130,7 +130,7 @@ router.put("/:boardId", async (req, res, next) => {
       [description, parseInt(boardId)]
     );
 
-    res.json(updatedBoard?.rows);
+    res.json(updatedBoard?.rows[0]);
   } catch (err) {
     console.log(err.message);
     res.status(500).json({

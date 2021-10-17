@@ -43,25 +43,25 @@ CREATE TABLE rich_content (
 
 CREATE TABLE users_upvotes_boards (
   user_id INTEGER REFERENCES users (user_id),
-  board_id INTEGER REFERENCES boards (board_id),
+  board_id INTEGER REFERENCES boards (board_id) ON DELETE CASCADE,
   PRIMARY KEY (user_id, board_id)
 );
 
 CREATE TABLE users_downvotes_boards (
   user_id INTEGER REFERENCES users (user_id),
-  board_id INTEGER REFERENCES boards (board_id),
+  board_id INTEGER REFERENCES boards (board_id) ON DELETE CASCADE,
   PRIMARY KEY (user_id, board_id)
 );
 
 CREATE TABLE users_upvotes_comments (
   user_id INTEGER REFERENCES users (user_id),
-  comment_id INTEGER REFERENCES comments (comment_id),
+  comment_id INTEGER REFERENCES comments (comment_id) ON DELETE CASCADE,
   PRIMARY KEY (user_id, comment_id)
 );
 
 CREATE TABLE users_downvotes_comments (
   user_id INTEGER REFERENCES users (user_id),
-  comment_id INTEGER REFERENCES comments (comment_id),
+  comment_id INTEGER REFERENCES comments (comment_id) ON DELETE CASCADE,
   PRIMARY KEY (user_id, comment_id)
 );
 

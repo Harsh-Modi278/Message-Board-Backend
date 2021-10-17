@@ -3,12 +3,16 @@
 
 This is the backend repository for [Message Boards project](https://github.com/Harsh-Modi278/Message-Board-Frontend).
 
+## Database schema design diagram
+
+![message boards db schema design](https://github.com/Harsh-Modi278/Message-Board-Backend/blob/main/message_boards_db_diagram.png)
+  
 
 ## Demo
 
 Frotend demo: http://message-board-frontend.vercel.app/
 
-Backend is hosted at: https://message-boards-backend.herokuapp.com/
+Backend is hosted at: https://message-boards-backend.herokuapp.com/api/boards
 
   
 ## Installation
@@ -58,7 +62,7 @@ Install dependencies
 Start the server
 
 ```bash
-  npm run start
+  npm run dev
 ```
 
   
@@ -78,7 +82,3 @@ To deploy this project run
 
 **Server:** Node, Express, PostgreSQL
 
-## Database schema design diagram
-
-![message boards db schema design](https://github.com/Harsh-Modi278/Message-Board-Backend/blob/main/message_boards_db_diagram.png)
-  

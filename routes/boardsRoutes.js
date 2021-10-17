@@ -85,8 +85,21 @@ router.post("/:boardId/comments", async (req, res, next) => {
       [parseInt(user_id), parseInt(boardId), comment, new Date()]
     );
 
-    // res.json(newComment?.rows[0]);
-    res.redirect("/api/boards/:boardId/comments");
+    const { sort } = req.query;
+    let queryString =
+      "SELECT comment_id, comments.user_id as user_id, comment, upvotes, comments.time as time, username, imageUrl FROM comments JOIN users USING(user_id) WHERE board_id = $1";
+    if (sort === "best") {
+      queryString += "ORDER BY upvotes DESC;";
+    } else if (sort == "old") {
+      queryString += "ORDER BY time";
+    } else if (sort == "new") {
+      queryString += "ORDER BY time DESC";
+    } else {
+      queryString += ";";
+    }
+
+    const updatedComments = await pool.query(queryString, [parseInt(boardId)]);
+    res.json(updatedComments.rows);
   } catch (err) {
     console.log(err.message);
     res.status(500).json({

@@ -101,7 +101,8 @@ router.post("/", async (req, res, next) => {
       "INSERT INTO boards(user_id, board_name, board_description, time_created) VALUES ($1, $2, $3, $4) RETURNING *;",
       [parseInt(user_id), title, description, new Date()]
     );
-    res.json(newBoard.rows[0]);
+    // res.json(newBoard.rows[0]);
+    res.redirect("/api/boards/:boardId/comments");
   } catch (err) {
     console.log(err.message);
     res.status(500).json({

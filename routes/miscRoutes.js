@@ -12,10 +12,10 @@ const pool = require("../db");
 router.get("/boards/:boardId/users/:userId", async (req, res, next) => {
   try {
     let { userId, boardId } = req.params;
-    const {operation} = req.query;
+    const { operation } = req.query;
     userId = parseInt(userId);
     boardId = parseInt(boardId);
-    
+
     const enrty = await pool.query(
       `SELECT * FROM users_${operation}s_boards WHERE user_id = $1 AND board_id = $2`,
       [userId, boardId]
@@ -30,6 +30,9 @@ router.get("/boards/:boardId/users/:userId", async (req, res, next) => {
     }
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error: err.message,
+    });
   }
 });
 
@@ -54,6 +57,9 @@ router.get("/comments/:commentId/users/:userId", async (req, res, next) => {
     }
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error: err.message,
+    });
   }
 });
 

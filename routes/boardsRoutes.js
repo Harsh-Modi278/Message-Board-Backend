@@ -30,7 +30,7 @@ router.get("/", async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
-      error:err.message
+      error: err.message,
     });
   }
 });
@@ -45,7 +45,7 @@ router.get("/:boardId", async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
-      error:err.message
+      error: err.message,
     });
   }
 });
@@ -70,7 +70,7 @@ router.get("/:boardId/comments", async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
-      error:err.message
+      error: err.message,
     });
   }
 });
@@ -89,7 +89,7 @@ router.post("/:boardId/comments", async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
-      error:err.message
+      error: err.message,
     });
   }
 });
@@ -105,7 +105,7 @@ router.post("/", async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
-      error:err.message
+      error: err.message,
     });
   }
 });
@@ -134,7 +134,7 @@ router.put("/:boardId", async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
-      error:err.message
+      error: err.message,
     });
   }
 });
@@ -167,7 +167,7 @@ router.delete("/", async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
-      error:err.message
+      error: err.message,
     });
   }
 });
@@ -187,7 +187,7 @@ router.get("/:boardId/comments/:commentId", async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
-      error:err.message
+      error: err.message,
     });
   }
 });
@@ -222,7 +222,7 @@ router.put("/:boardId/comments/:commentId", async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
-      error:err.message
+      error: err.message,
     });
   }
 });
@@ -258,7 +258,7 @@ router.delete("/:boardId/comments/:commentId", async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
-      error:err.message
+      error: err.message,
     });
   }
 });
@@ -275,16 +275,18 @@ router.post("/:boardId/upvote", async (req, res, next) => {
       "SELECT * FROM users_upvotes_boards WHERE user_id = $1 AND board_id = $2",
       [user_id, boardId]
     );
-    const board = await pool.query("SELECT upvotes FROM boards WHERE board_id = $1", [boardId]);
+    const board = await pool.query(
+      "SELECT upvotes FROM boards WHERE board_id = $1",
+      [boardId]
+    );
 
-    
     if (enrty.rows.length > 0) {
       // it has already been upvoted by the same user
       const updatedBoard = await pool.query(
         "UPDATE boards SET upvotes = upvotes - 1 WHERE board_id = $1 RETURNING *",
         [boardId]
-        );
-        
+      );
+
       //remove the log that user has upvoted the board
       const deletedEntry = await pool.query(
         "DELETE FROM users_upvotes_boards WHERE user_id = $1 AND board_id = $2",
@@ -305,7 +307,6 @@ router.post("/:boardId/upvote", async (req, res, next) => {
         );
       }
 
-
       //remove the log that user has downvoted the board
       await pool.query(
         "DELETE FROM users_downvotes_boards WHERE user_id = $1 AND board_id = $2",
@@ -317,11 +318,10 @@ router.post("/:boardId/upvote", async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
-      error:err.message
+      error: err.message,
     });
   }
 });
-
 
 router.post("/:boardId/downvote", async (req, res, next) => {
   try {
@@ -361,7 +361,6 @@ router.post("/:boardId/downvote", async (req, res, next) => {
         [boardId]
       );
 
-
       if (board.rows[0].upvotes - 1 != 0) {
         const result = await pool.query(
           "INSERT INTO users_downvotes_boards (user_id, board_id) VALUES ($1, $2) RETURNING *",
@@ -379,10 +378,9 @@ router.post("/:boardId/downvote", async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
-      error:err.message
+      error: err.message,
     });
   }
 });
-
 
 module.exports = router;

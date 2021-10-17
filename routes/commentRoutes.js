@@ -64,6 +64,9 @@ router.post("/:commentId/upvote", async (req, res, next) => {
     }
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error: err.message,
+    });
   }
 });
 
@@ -121,8 +124,10 @@ router.post("/:commentId/downvote", async (req, res, next) => {
     }
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({
+      error: err.message,
+    });
   }
 });
-
 
 module.exports = router;

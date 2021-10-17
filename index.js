@@ -16,30 +16,26 @@ app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
 // enable all cors requests
 app.use(cors());
-app.options('*', cors()); //enable cors for pre-flight requests
-
-// app.use("/api", indexRoutes);
 
 app.use("/api/boards", boardsRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api", miscRoutes); //keep it at last
 
-
 // catch-all route
 // If request is able pass till here, route was not found. => Send 404 error
 app.use((req, res, next) => {
-    const error = new Error('Not Found');
-    error.status = 404;
-    next(error);
+  const error = new Error("Not Found");
+  error.status = 404;
+  next(error);
+});
+
+// Handle all the previous errors (including 404 and others)
+app.use((error, req, res, next) => {
+  res.status(error.status || 500);
+  res.json({
+    error: {
+      message: error.message,
+    },
   });
-  
-  // Handle all the previous errors (including 404 and others)
-  app.use((error, req, res, next) => {
-    res.status(error.status || 500);
-    res.json({
-      error : {
-        message: error.message
-      }
-    });
-  })
+});

@@ -66,10 +66,10 @@ CREATE TABLE users_downvotes_comments (
 );
 
 -- load data
-\copy users FROM '/Users/harshmodi/Downloads/users.csv' WITH (FORMAT CSV, HEADER);
-\copy boards FROM '/Users/harshmodi/Downloads/boards.csv' WITH (FORMAT CSV, HEADER);
-\copy comments FROM '/Users/harshmodi/Downloads/comments.csv' WITH (FORMAT CSV, HEADER);
-\copy users_upvotes_boards FROM '/Users/harshmodi/Downloads/users_upvotes_boards.csv' WITH (FORMAT CSV, HEADER);
-\copy users_downvotes_boards FROM '/Users/harshmodi/Downloads/users_downvotes_boards.csv' WITH (FORMAT CSV, HEADER);
-\copy users_downvotes_comments FROM '/Users/harshmodi/Downloads/users_downvotes_comments.csv' WITH (FORMAT CSV, HEADER);
-\copy users_upvotes_comments FROM '/Users/harshmodi/Downloads/users_upvotes_comments.csv' WITH (FORMAT CSV, HEADER);
+\copy users FROM '/Users/harshmodi/Documents/DBMS - learning/Message-Board-Backend/data/users.csv' WITH (FORMAT CSV, HEADER);
+\copy boards FROM '/Users/harshmodi/Documents/DBMS - learning/Message-Board-Backend/data//boards.csv' WITH (FORMAT CSV, HEADER);
+\copy comments FROM '/Users/harshmodi/Documents/DBMS - learning/Message-Board-Backend/data/comments.csv' WITH (FORMAT CSV, HEADER);
+\copy users_upvotes_boards FROM '/Users/harshmodi/Documents/DBMS - learning/Message-Board-Backend/data/users_upvotes_boards.csv' WITH (FORMAT CSV, HEADER);
+\copy users_downvotes_boards FROM '/Users/harshmodi/Documents/DBMS - learning/Message-Board-Backend/data/users_downvotes_boards.csv' WITH (FORMAT CSV, HEADER);
+\copy users_downvotes_comments FROM '/Users/harshmodi/Documents/DBMS - learning/Message-Board-Backend/data//users_downvotes_comments.csv' WITH (FORMAT CSV, HEADER);
+\copy users_upvotes_comments FROM '/Users/harshmodi/Documents/DBMS - learning/Message-Board-Backend/data//users_upvotes_comments.csv' WITH (FORMAT CSV, HEADER);

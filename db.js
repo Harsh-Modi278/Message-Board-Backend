@@ -31,6 +31,7 @@ const prodConfig = {
  */
 
 const realNodeEnv = process.env.SERVER_ENV || process.env.NODE_ENV;
+console.log({realNodeEnv});
 const pool = new Pool(realNodeEnv === 'production' ? prodConfig : devConfig);
 
 module.exports = pool;

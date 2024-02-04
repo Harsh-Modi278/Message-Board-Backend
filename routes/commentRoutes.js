@@ -9,6 +9,9 @@ dotenv.config({ path: "./.env", encoding: "utf-8" });
 // postgres related
 const pool = require("../db");
 
+// error utility
+const ErrorUtility = require("./utilities/errorUtility");
+
 router.post("/:commentId/upvote", async (req, res, next) => {
   try {
     let { user_id } = req.body;
@@ -63,10 +66,7 @@ router.post("/:commentId/upvote", async (req, res, next) => {
       res.json(updatedComment.rows[0]);
     }
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
@@ -123,10 +123,7 @@ router.post("/:commentId/downvote", async (req, res, next) => {
       res.json(updatedComment.rows[0]);
     }
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 

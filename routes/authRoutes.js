@@ -9,6 +9,9 @@ dotenv.config({ path: "./.env", encoding: "utf-8" });
 // postgres related
 const pool = require("../db");
 
+// error utility
+const logError = require("./utilities/errorUtility");
+
 router.post("/login", async (req, res, next) => {
   try {
     const { name, email, imageUrl } = req.body;
@@ -46,10 +49,7 @@ router.post("/login", async (req, res, next) => {
       });
     }
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    logError(500, err);
   }
 });
 

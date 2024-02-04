@@ -9,6 +9,9 @@ dotenv.config({ path: "./.env", encoding: "utf-8" });
 // postgres related
 const pool = require("../db");
 
+// error utility
+const ErrorUtility = require("./utilities/errorUtility");
+
 router.get("/", async (req, res, next) => {
   const { sort } = req.query;
   let queryString =
@@ -28,32 +31,25 @@ router.get("/", async (req, res, next) => {
     const allBoards = await pool.query(queryString);
     res.json(allBoards.rows);
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
 router.get("/:boardId", async (req, res, next) => {
   try {
-    const board = await pool.query(
-      "SELECT boards.board_id AS board_id, boards.user_id as user_id, board_name, board_description, upvotes, time_created, username, imageUrl FROM boards JOIN users USING(user_id) WHERE board_id = $1;",
-      [req.params.boardId]
-    );
+    const queryString = "SELECT boards.board_id AS board_id, boards.user_id as user_id, board_name, board_description, upvotes, time_created, username, imageUrl FROM boards JOIN users USING(user_id) WHERE board_id = $1;";
+
+    const board = await pool.query(queryString, [req.params.boardId]);
     res.json(board.rows[0]);
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
 router.get("/:boardId/comments", async (req, res, next) => {
   const { sort } = req.query;
   let queryString =
-    "SELECT comment_id, comments.user_id as user_id, comment, upvotes, comments.time as time, username, imageUrl FROM comments JOIN users USING(user_id) WHERE board_id = $1";
+    "SELECT comment_id, comments.user_id as user_id, comment, upvotes, comments.time as time, username, imageUrl FROM comments JOIN users USING(user_id) WHERE board_id = $1 ";
   if (sort === "best") {
     queryString += "ORDER BY upvotes DESC;";
   } else if (sort == "old") {
@@ -68,26 +64,22 @@ router.get("/:boardId/comments", async (req, res, next) => {
     const board = await pool.query(queryString, [req.params.boardId]);
     res.json(board.rows);
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
 router.post("/:boardId/comments", async (req, res, next) => {
   try {
-    const { user_id, comment } = req.body;
-    const { boardId } = req.params;
+    const { comment } = req.body;
 
     const newComment = await pool.query(
       "INSERT INTO comments (user_id, board_id, comment, time) VALUES ($1, $2, $3, $4) RETURNING *;",
-      [parseInt(user_id), parseInt(boardId), comment, new Date()]
+      [req.body.userId, req.params.boardId, comment, new Date()]
     );
 
     const { sort } = req.query;
     let queryString =
-      "SELECT comment_id, comments.user_id as user_id, comment, upvotes, comments.time as time, username, imageUrl FROM comments JOIN users USING(user_id) WHERE board_id = $1";
+      "SELECT comment_id, comments.user_id as user_id, comment, upvotes, comments.time as time, username, imageUrl FROM comments JOIN users USING(user_id) WHERE board_id = $1 ";
     if (sort === "best") {
       queryString += "ORDER BY upvotes DESC;";
     } else if (sort == "old") {
@@ -98,13 +90,10 @@ router.post("/:boardId/comments", async (req, res, next) => {
       queryString += ";";
     }
 
-    const updatedComments = await pool.query(queryString, [parseInt(boardId)]);
+    const updatedComments = await pool.query(queryString, [req.params.boardId]);
     res.json(updatedComments.rows);
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
@@ -113,14 +102,11 @@ router.post("/", async (req, res, next) => {
     const { user_id, title, description } = req.body;
     const newBoard = await pool.query(
       "INSERT INTO boards(user_id, board_name, board_description, time_created) VALUES ($1, $2, $3, $4) RETURNING *;",
-      [parseInt(user_id), title, description, new Date()]
+      [user_id, title, description, new Date()]
     );
     res.json(newBoard.rows[0]);
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
@@ -141,24 +127,18 @@ router.put("/:boardId", async (req, res, next) => {
     }
     const updatedBoard = await pool.query(
       "UPDATE boards SET board_description = ($1) WHERE board_id = ($2) RETURNING *;",
-      [description, parseInt(boardId)]
+      [description, boardId]
     );
 
     res.json(updatedBoard?.rows[0]);
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
 router.delete("/", async (req, res, next) => {
   try {
-    let { board_id: boardId, user_id } = req.body;
-
-    boardId = parseInt(boardId);
-    user_id = parseInt(user_id);
+    const { board_id: boardId, user_id } = req.body;
 
     // check if this board is posted by user with user_id or not
     const board = await pool.query(
@@ -179,18 +159,13 @@ router.delete("/", async (req, res, next) => {
     );
     res.json(deletedBoard.rows[0]);
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
 router.get("/:boardId/comments/:commentId", async (req, res, next) => {
   try {
-    let { boardId, commentId } = req.params;
-    boardId = parseInt(boardId);
-    commentId = parseInt(commentId);
+    const { boardId, commentId } = req.params;
 
     const commentText = await pool.query(
       "SELECT comment FROM comments WHERE comment_id = $1 AND board_id = $2",
@@ -199,20 +174,14 @@ router.get("/:boardId/comments/:commentId", async (req, res, next) => {
 
     res.json(commentText.rows[0]);
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
 router.put("/:boardId/comments/:commentId", async (req, res, next) => {
   try {
-    let { boardId, commentId } = req.params;
-    let { comment, user_id } = req.body;
-    boardId = parseInt(boardId);
-    commentId = parseInt(commentId);
-    user_id = parseInt(user_id);
+    const { boardId, commentId } = req.params;
+    const { comment, user_id } = req.body;
 
     // check if comment is written by the person who is trying to update it
     const currComment = await pool.query(
@@ -234,22 +203,15 @@ router.put("/:boardId/comments/:commentId", async (req, res, next) => {
 
     res.json(updatedComment.rows[0]);
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
 router.delete("/:boardId/comments/:commentId", async (req, res, next) => {
   try {
-    let { boardId, commentId } = req.params;
-    let { user_id } = req.body;
+    const { boardId, commentId } = req.params;
+    const { user_id } = req.body;
     if (!user_id) return res.sendStatus(403);
-
-    boardId = parseInt(boardId);
-    commentId = parseInt(commentId);
-    user_id = parseInt(user_id);
 
     // check if comment is written by the person who is trying to update it
     const currComment = await pool.query(
@@ -270,19 +232,14 @@ router.delete("/:boardId/comments/:commentId", async (req, res, next) => {
 
     res.json(deletedComment.rows[0]);
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
 router.post("/:boardId/upvote", async (req, res, next) => {
   try {
-    let { user_id } = req.body;
-    let { boardId } = req.params;
-    user_id = parseInt(user_id);
-    boardId = parseInt(boardId);
+    const { user_id } = req.body;
+    const { boardId } = req.params;
 
     // check if already upvoted by same user then downvote
     const enrty = await pool.query(
@@ -330,19 +287,14 @@ router.post("/:boardId/upvote", async (req, res, next) => {
       res.json(updatedBoard.rows[0]);
     }
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
 router.post("/:boardId/downvote", async (req, res, next) => {
   try {
-    let { user_id } = req.body;
-    let { boardId } = req.params;
-    user_id = parseInt(user_id);
-    boardId = parseInt(boardId);
+    const { user_id } = req.body;
+    const { boardId } = req.params;
 
     // check if already downvoted by same user then downvote
     const enrty = await pool.query(
@@ -390,10 +342,7 @@ router.post("/:boardId/downvote", async (req, res, next) => {
       res.json(updatedBoard.rows[0]);
     }
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({
-      error: err.message,
-    });
+    ErrorUtility.logError(500, err, res);
   }
 });
 
